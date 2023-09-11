@@ -12,6 +12,7 @@ import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
+from sklearn.preprocessing import StandardScaler
 
 def pre_process():
     df = pd.read_csv("cancer_reg.csv", encoding='latin-1')
@@ -22,7 +23,6 @@ def pre_process():
     df['binnedInc'] = df['binnedInc'].str.replace('(', '')
     df['binnedInc'] = df['binnedInc'].str.replace('[', '')
     df['binnedInc'] = df['binnedInc'].str.replace(']', '')
-    x = df['binnedInc'].str.split(',', expand=True).astype(float)
     x = df['binnedInc'].str.split(',', expand=True).astype(float)
     y = (x[0] + x[1]) / 2
     df['binnedInc'] = y
@@ -36,8 +36,11 @@ def pre_process():
     train_ratio = 0.75
     validation_ratio = 0.15
     test_ratio = 0.10
-    x1 = df.drop(['TARGET_deathRate', 'PctSomeCol18_24','PctPrivateCoverageAlone','Geography'], axis=1)
+    x1 = df.drop(['TARGET_deathRate', 'Geography'], axis=1) #'PctSomeCol18_24','PctPrivateCoverageAlone',
+    sc = StandardScaler()
+    x1 = sc.fit_transform(x1)
     y1 = df['TARGET_deathRate']
+
     X_train, X_test, Y_train, Y_test = train_test_split(x1, y1, test_size=1 - train_ratio , random_state=1) #
     X_train, X_val, Y_train, Y_val = train_test_split(X_train, Y_train, test_size=test_ratio / (test_ratio + validation_ratio), random_state=1)
     print(X_train, Y_train, X_test, Y_test, X_val, Y_val)
@@ -46,8 +49,11 @@ def pre_process():
     print(clf.predict(X_test))
     print(clf.score(X_test,Y_test))
 
+
 def load_data():
+
     print('yo')
+
 
 
 def main():
